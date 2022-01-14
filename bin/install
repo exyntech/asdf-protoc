@@ -20,16 +20,32 @@ get_platform() {
   fi
 }
 
+rosetta_alert() {
+  if [[ "`pkgutil --files com.apple.pkg.RosettaUpdateAuto`" == "" ]]; then 
+    echo 'warn: rosetta not installed!!!'
+    echo 'run:'
+    echo '> softwareupdate --install-rosetta'
+    echo '> asdf plugin remove protoc'
+    echo '> asdf plugin add protoc https://github.com/dsaouda/asdf-protoc'
+  fi
+}
+
 install_protoc() {
   local install_type=$1
   local version=$2
   local install_path=$3
+  local arch=$(uname -m)
+  local platform=$(get_platform)
 
+  if [ "$platform" == "osx" ] && [ "$arch" == "arm64" ]; then
+    rosetta_alert
+    arch=x86_64
+  fi
 
   mkdir -p "${install_path}"
 
   local base_url="https://github.com/protocolbuffers/protobuf/releases/download"
-  local url="${base_url}/v${version}/protoc-${version}-$(get_platform)-$(uname -m).zip"
+  local url="${base_url}/v${version}/protoc-${version}-${platform}-${arch}.zip"
   local download_path="${TMP_DIR}/protoc.zip"
 
   echo "Downloading ${url}"
