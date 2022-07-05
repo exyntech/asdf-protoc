@@ -21,7 +21,7 @@ get_platform() {
 }
 
 rosetta_alert() {
-  if [[ "`pkgutil --files com.apple.pkg.RosettaUpdateAuto`" == "" ]]; then 
+  if [[ "`pkgutil --files com.apple.pkg.RosettaUpdateAuto`" == "" ]]; then
     echo 'warn: rosetta not installed!!!'
     echo 'run:'
     echo '> softwareupdate --install-rosetta'
@@ -40,6 +40,8 @@ install_protoc() {
   if [ "$platform" == "osx" ] && [ "$arch" == "arm64" ]; then
     rosetta_alert
     arch=x86_64
+  elif [ "$platform" == "linux" ] && [ "$arch" == "aarch64" ]; then
+    arch=aarch_64
   fi
 
   mkdir -p "${install_path}"
